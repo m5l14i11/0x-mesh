@@ -17,6 +17,7 @@ import (
 	p2pnet "github.com/libp2p/go-libp2p-core/network"
 	"github.com/libp2p/go-libp2p-core/peer"
 	ma "github.com/multiformats/go-multiaddr"
+	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -277,6 +278,16 @@ loop:
 		case <-ctx.Done():
 			t.Fatal("timed out waiting for node0 to discover node2")
 		case conn := <-notifee.conns:
+			// FIXME
+			log.WithFields(map[string]interface{}{
+				"conn":     conn,
+				"node0_ID": node0.ID(),
+				"node1_ID": node1.ID(),
+				"node2_ID": node2.ID(),
+			}).Info("Conn for Test")
+			if conn.LocalPeer() == node2.ID() && conn.RemotePeer() == node0.ID() {
+				break loop
+			}
 			if conn.LocalPeer() == node0.ID() && conn.RemotePeer() == node2.ID() {
 				break loop
 			}

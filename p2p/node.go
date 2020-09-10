@@ -225,10 +225,11 @@ func New(ctx context.Context, config Config) (*Node, error) {
 		libp2p.EnableRelay(),
 		libp2p.BandwidthReporter(bandwidthCounter),
 		libp2p.Filters(filters),
-		libp2p.Security(secio.ID, secio.New),
 	}...)
 	if config.Insecure {
 		opts = append(opts, libp2p.NoSecurity)
+	} else {
+		opts = append(opts, libp2p.Security(secio.ID, secio.New))
 	}
 
 	// Initialize the host.
